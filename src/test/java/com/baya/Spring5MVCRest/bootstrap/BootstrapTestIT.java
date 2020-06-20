@@ -1,6 +1,7 @@
 package com.baya.Spring5MVCRest.bootstrap;
 
 import com.baya.Spring5MVCRest.repositories.CategoryRepository;
+import com.baya.Spring5MVCRest.repositories.CustomerRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,13 +9,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-class BootstrapIntegrationTest {
+class BootstrapTestIT {
 
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
     @Test
-    void run() throws Exception {
+    void run() {
         assertEquals(5, categoryRepository.count());
+        assertEquals(2, customerRepository.count());
     }
 }
