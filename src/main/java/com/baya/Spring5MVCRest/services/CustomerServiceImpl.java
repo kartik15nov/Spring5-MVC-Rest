@@ -25,8 +25,11 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository
                 .findAll()
                 .stream()
-                .map(customerMapper::customerToCustomerDTO)
-                .peek(customerDTO -> customerDTO.setCustomerUrl("/api/v1/customers/" + customerDTO.getId()))
+                .map(customer -> {
+                    CustomerDTO customerDTO = customerMapper.customerToCustomerDTO(customer);
+                    customerDTO.setCustomerUrl("/api/v1/customers/" + customer.getId());
+                    return customerDTO;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -36,7 +39,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .findById(id)
                 .map(customer -> {
                     CustomerDTO customerDTO = customerMapper.customerToCustomerDTO(customer);
-                    customerDTO.setCustomerUrl("/api/v1/customers/" + customerDTO.getId());
+                    customerDTO.setCustomerUrl("/api/v1/customers/" + customer.getId());
                     return customerDTO;
                 })
                 .orElseThrow(RuntimeException::new);
@@ -44,22 +47,24 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerDTO createNewCustomer(CustomerDTO customerDTO) {
-        return saveAndReturnCustomerDTO(customerDTO);
+        Customer customer = customerMapper.customerDTOToCustomer(customerDTO);
+        return saveAndReturnCustomerDTO(customer);
     }
 
     @Override
     public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) {
-        customerDTO.setId(id);
+        Customer customer = customerMapper.customerDTOToCustomer(customerDTO);
+        customer.setId(id);
 
-        return saveAndReturnCustomerDTO(customerDTO);
+        return saveAndReturnCustomerDTO(customer);
     }
 
-    public CustomerDTO saveAndReturnCustomerDTO(CustomerDTO customerDTO) {
-        Customer customer = customerMapper.customerDTOToCustomer(customerDTO);
+    public CustomerDTO saveAndReturnCustomerDTO(Customer customer) {
+
         Customer savedCustomer = customerRepository.save(customer);
 
         CustomerDTO toCustomerDTO = customerMapper.customerToCustomerDTO(savedCustomer);
-        toCustomerDTO.setCustomerUrl("/api/v1/customers/" + toCustomerDTO.getId());
+        toCustomerDTO.setCustomerUrl("/api/v1/customers/" + savedCustomer.getId());
 
         return toCustomerDTO;
     }

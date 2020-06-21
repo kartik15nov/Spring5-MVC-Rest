@@ -57,7 +57,6 @@ class CustomerServiceTest {
         CustomerDTO customerDTO = customerService.getCustomerById(1L);
 
         //then
-        assertEquals(1L, customerDTO.getId());
         assertEquals("Kartik", customerDTO.getFirstName());
         assertEquals("Mallik", customerDTO.getLastName());
         assertEquals("/api/v1/customers/1", customerDTO.getCustomerUrl());
@@ -68,18 +67,19 @@ class CustomerServiceTest {
     @Test
     void createNewCustomer() {
         //given
-        CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setId(2L);
-        customerDTO.setFirstName("Test");
-        customerDTO.setLastName("Case");
+        Customer customer = new Customer();
+        customer.setId(2L);
+        customer.setFirstName("Test");
+        customer.setLastName("Case");
 
-        when(customerRepository.save(any())).thenReturn(CustomerMapper.INSTANCE.customerDTOToCustomer(customerDTO));
+        CustomerDTO customerDTO = CustomerMapper.INSTANCE.customerToCustomerDTO(customer);
+
+        when(customerRepository.save(any())).thenReturn(customer);
 
         //when
         CustomerDTO savedCustomerDTO = customerService.createNewCustomer(customerDTO);
 
         //then
-        assertEquals(customerDTO.getId(), savedCustomerDTO.getId());
         assertEquals(customerDTO.getFirstName(), savedCustomerDTO.getFirstName());
         assertEquals(customerDTO.getLastName(), savedCustomerDTO.getLastName());
         assertEquals("/api/v1/customers/2", savedCustomerDTO.getCustomerUrl());
@@ -88,18 +88,19 @@ class CustomerServiceTest {
     @Test
     void updateCustomer() {
         //given
-        CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setId(5L);
-        customerDTO.setFirstName("Sheela");
-        customerDTO.setLastName("Jawani");
+        Customer customer = new Customer();
+        customer.setId(5L);
+        customer.setFirstName("Sheela");
+        customer.setLastName("Jawani");
 
-        when(customerRepository.save(any())).thenReturn(CustomerMapper.INSTANCE.customerDTOToCustomer(customerDTO));
+        CustomerDTO customerDTO = CustomerMapper.INSTANCE.customerToCustomerDTO(customer);
+
+        when(customerRepository.save(any())).thenReturn(customer);
 
         //when
         CustomerDTO updatedCustomerDTO = customerService.updateCustomer(5L, customerDTO);
 
         //then
-        assertEquals(customerDTO.getId(), updatedCustomerDTO.getId());
         assertEquals(customerDTO.getFirstName(), updatedCustomerDTO.getFirstName());
         assertEquals(customerDTO.getLastName(), updatedCustomerDTO.getLastName());
         assertEquals("/api/v1/customers/5", updatedCustomerDTO.getCustomerUrl());

@@ -1,6 +1,8 @@
 package com.baya.Spring5MVCRest.controllers.v1;
 
+import com.baya.Spring5MVCRest.api.v1.mapper.CustomerMapper;
 import com.baya.Spring5MVCRest.api.v1.model.CustomerDTO;
+import com.baya.Spring5MVCRest.domain.Customer;
 import com.baya.Spring5MVCRest.services.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,20 +57,20 @@ class CustomerControllerTest {
     void getCustomerById() throws Exception {
         //given
         CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setId(2L);
+        customerDTO.setCustomerUrl("/api/v1/customers/2");
+
         when(customerService.getCustomerById(anyLong())).thenReturn(customerDTO);
 
         //when, then
         mockMvc.perform(get("/api/v1/customers/2").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", equalTo(2)));
+                .andExpect(jsonPath("$.customerUrl", equalTo("/api/v1/customers/2")));
     }
 
     @Test
     void createNewCustomer() throws Exception {
         //given
         CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setId(5L);
         customerDTO.setFirstName("Test");
         customerDTO.setLastName("Case");
         customerDTO.setCustomerUrl("/api/v1/customers/5");
@@ -89,8 +91,10 @@ class CustomerControllerTest {
     @Test
     void updateCustomer() throws Exception {
         //given
-        CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setId(5L);
+        Customer customer = new Customer();
+        customer.setId(5L);
+
+        CustomerDTO customerDTO = CustomerMapper.INSTANCE.customerToCustomerDTO(customer);
         customerDTO.setFirstName("Nandi");
         customerDTO.setLastName("Mallik");
         customerDTO.setCustomerUrl("/api/v1/customers/5");
@@ -103,7 +107,6 @@ class CustomerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(customerDTO)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", equalTo(5)))
                 .andExpect(jsonPath("$.firstName", equalTo("Nandi")))
                 .andExpect(jsonPath("$.lastName", equalTo("Mallik")))
                 .andExpect(jsonPath("$.customerUrl", equalTo("/api/v1/customers/5")));
