@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -132,5 +132,16 @@ class CustomerControllerTest {
                 .andExpect(jsonPath("$.firstName", equalTo("Kalia")))
                 .andExpect(jsonPath("$.lastName", equalTo("Sahu")))
                 .andExpect(jsonPath("$.customerUrl", equalTo("/api/v1/customers/5")));
+    }
+
+    @Test
+    void deleteCustomer() throws Exception {
+        //when, then
+        mockMvc.perform(
+                delete("/api/v1/customers/6")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(customerService, times(1)).deleteCustomer(anyLong());
     }
 }

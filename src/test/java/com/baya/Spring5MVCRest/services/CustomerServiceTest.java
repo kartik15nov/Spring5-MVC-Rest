@@ -105,4 +105,13 @@ class CustomerServiceTest {
         assertEquals(customerDTO.getLastName(), updatedCustomerDTO.getLastName());
         assertEquals("/api/v1/customers/5", updatedCustomerDTO.getCustomerUrl());
     }
+
+    @Test
+    void deleteCustomer() {
+        //when
+        customerService.deleteCustomer(1L);
+
+        //then
+        verify(customerRepository, times(1)).deleteById(anyLong());
+    }
 }
