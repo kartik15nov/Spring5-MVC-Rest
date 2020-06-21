@@ -2,6 +2,7 @@ package com.baya.Spring5MVCRest.services;
 
 import com.baya.Spring5MVCRest.api.v1.mapper.CustomerMapper;
 import com.baya.Spring5MVCRest.api.v1.model.CustomerDTO;
+import com.baya.Spring5MVCRest.controllers.v1.CustomerController;
 import com.baya.Spring5MVCRest.domain.Customer;
 import com.baya.Spring5MVCRest.repositories.CustomerRepository;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .stream()
                 .map(customer -> {
                     CustomerDTO customerDTO = customerMapper.customerToCustomerDTO(customer);
-                    customerDTO.setCustomerUrl("/api/v1/customers/" + customer.getId());
+                    customerDTO.setCustomerUrl(getCustomerURL(customer.getId()));
                     return customerDTO;
                 })
                 .collect(Collectors.toList());
@@ -39,7 +40,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .findById(id)
                 .map(customer -> {
                     CustomerDTO customerDTO = customerMapper.customerToCustomerDTO(customer);
-                    customerDTO.setCustomerUrl("/api/v1/customers/" + customer.getId());
+                    customerDTO.setCustomerUrl(getCustomerURL(customer.getId()));
                     return customerDTO;
                 })
                 .orElseThrow(RuntimeException::new);
@@ -81,13 +82,17 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.deleteById(id);
     }
 
-    public CustomerDTO saveAndReturnCustomerDTO(Customer customer) {
+    private CustomerDTO saveAndReturnCustomerDTO(Customer customer) {
 
         Customer savedCustomer = customerRepository.save(customer);
 
         CustomerDTO toCustomerDTO = customerMapper.customerToCustomerDTO(savedCustomer);
-        toCustomerDTO.setCustomerUrl("/api/v1/customers/" + savedCustomer.getId());
+        toCustomerDTO.setCustomerUrl(getCustomerURL(savedCustomer.getId()));
 
         return toCustomerDTO;
+    }
+
+    private String getCustomerURL(Long id) {
+        return CustomerController.BASE_URL + "/" + id;
     }
 }
