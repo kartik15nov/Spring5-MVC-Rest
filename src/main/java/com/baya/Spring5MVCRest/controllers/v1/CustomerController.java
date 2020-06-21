@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/api/v1/customers")
 public class CustomerController {
+
     private final CustomerService customerService;
 
     public CustomerController(CustomerService customerService) {
@@ -32,5 +33,10 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<CustomerDTO> createNewCustomer(@RequestBody CustomerDTO customerDTO) {
         return new ResponseEntity<>(customerService.createNewCustomer(customerDTO), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{customerId}")
+    public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable Long customerId, @RequestBody CustomerDTO customerDTO) {
+        return new ResponseEntity<>(customerService.updateCustomer(customerId, customerDTO), HttpStatus.OK);
     }
 }
