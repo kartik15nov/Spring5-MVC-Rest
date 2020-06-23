@@ -1,6 +1,7 @@
 package com.baya.Spring5MVCRest.controllers.v1;
 
 import com.baya.Spring5MVCRest.api.v1.model.CategoryDTO;
+import com.baya.Spring5MVCRest.exceptions.ResourceNotFoundException;
 import com.baya.Spring5MVCRest.services.CategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ class CategoryControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(categoryController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(categoryController).setControllerAdvice(RestResponseEntityExceptionHandler.class).build();
     }
 
     @Test
@@ -75,5 +76,15 @@ class CategoryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", equalTo("Apple")));
+    }
+
+    @Test
+    public void getByNameNotFound() throws Exception {
+
+        when(categoryService.getCategoryByName(anyString())).thenThrow(ResourceNotFoundException.class);
+
+        mockMvc.perform(get(CategoryController.BASE_URL + "/Foo")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }

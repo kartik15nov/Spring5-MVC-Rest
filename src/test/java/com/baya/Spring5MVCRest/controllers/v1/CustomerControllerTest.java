@@ -3,6 +3,7 @@ package com.baya.Spring5MVCRest.controllers.v1;
 import com.baya.Spring5MVCRest.api.v1.mapper.CustomerMapper;
 import com.baya.Spring5MVCRest.api.v1.model.CustomerDTO;
 import com.baya.Spring5MVCRest.domain.Customer;
+import com.baya.Spring5MVCRest.exceptions.ResourceNotFoundException;
 import com.baya.Spring5MVCRest.services.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ class CustomerControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(customerController).setControllerAdvice(RestResponseEntityExceptionHandler.class).build();
     }
 
     @Test
@@ -142,5 +143,15 @@ class CustomerControllerTest {
                 .andExpect(status().isOk());
 
         verify(customerService, times(1)).deleteCustomer(anyLong());
+    }
+
+    @Test
+    public void testNotFoundException() throws Exception {
+
+        when(customerService.getCustomerById(anyLong())).thenThrow(ResourceNotFoundException.class);
+
+        mockMvc.perform(get(CustomerController.BASE_URL + "/222")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }

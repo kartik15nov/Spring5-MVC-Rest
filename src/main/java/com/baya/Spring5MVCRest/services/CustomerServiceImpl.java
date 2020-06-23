@@ -4,6 +4,7 @@ import com.baya.Spring5MVCRest.api.v1.mapper.CustomerMapper;
 import com.baya.Spring5MVCRest.api.v1.model.CustomerDTO;
 import com.baya.Spring5MVCRest.controllers.v1.CustomerController;
 import com.baya.Spring5MVCRest.domain.Customer;
+import com.baya.Spring5MVCRest.exceptions.ResourceNotFoundException;
 import com.baya.Spring5MVCRest.repositories.CustomerRepository;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
                     customerDTO.setCustomerUrl(getCustomerURL(customer.getId()));
                     return customerDTO;
                 })
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
     @Override
@@ -74,7 +75,7 @@ public class CustomerServiceImpl implements CustomerService {
                     }
 
                     return saveAndReturnCustomerDTO(customer);
-                }).orElseThrow(RuntimeException::new);
+                }).orElseThrow(ResourceNotFoundException::new);
     }
 
     @Override
