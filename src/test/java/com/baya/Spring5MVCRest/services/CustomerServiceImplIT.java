@@ -6,6 +6,7 @@ import com.baya.Spring5MVCRest.bootstrap.Bootstrap;
 import com.baya.Spring5MVCRest.domain.Customer;
 import com.baya.Spring5MVCRest.repositories.CategoryRepository;
 import com.baya.Spring5MVCRest.repositories.CustomerRepository;
+import com.baya.Spring5MVCRest.repositories.VendorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ class CustomerServiceImplIT {
     @Autowired
     CategoryRepository categoryRepository;
 
+    @Autowired
+    VendorRepository vendorRepository;
+
     Bootstrap bootstrap;
 
     CustomerService customerService;
@@ -31,7 +35,7 @@ class CustomerServiceImplIT {
     @BeforeEach
     void setUp() {
         customerService = new CustomerServiceImpl(CustomerMapper.INSTANCE, customerRepository);
-        bootstrap = new Bootstrap(categoryRepository, customerRepository);
+        bootstrap = new Bootstrap(categoryRepository, customerRepository, vendorRepository);
         bootstrap.run();
     }
 
