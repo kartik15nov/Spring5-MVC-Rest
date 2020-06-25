@@ -66,7 +66,7 @@ class CustomerControllerTest {
         //when, then
         mockMvc.perform(get(CustomerController.BASE_URL + "/2").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.customerUrl", equalTo(CustomerController.BASE_URL + "/2")));
+                .andExpect(jsonPath("$.customer_url", equalTo(CustomerController.BASE_URL + "/2")));
     }
 
     @Test
@@ -87,7 +87,7 @@ class CustomerControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.firstName", equalTo("Test")))
                 .andExpect(jsonPath("$.lastName", equalTo("Case")))
-                .andExpect(jsonPath("$.customerUrl", equalTo(CustomerController.BASE_URL + "/5")));
+                .andExpect(jsonPath("$.customer_url", equalTo(CustomerController.BASE_URL + "/5")));
     }
 
     @Test
@@ -111,7 +111,7 @@ class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName", equalTo("Nandi")))
                 .andExpect(jsonPath("$.lastName", equalTo("Mallik")))
-                .andExpect(jsonPath("$.customerUrl", equalTo(CustomerController.BASE_URL + "/5")));
+                .andExpect(jsonPath("$.customer_url", equalTo(CustomerController.BASE_URL + "/5")));
     }
 
     @Test
@@ -132,7 +132,7 @@ class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName", equalTo("Kalia")))
                 .andExpect(jsonPath("$.lastName", equalTo("Sahu")))
-                .andExpect(jsonPath("$.customerUrl", equalTo(CustomerController.BASE_URL + "/5")));
+                .andExpect(jsonPath("$.customer_url", equalTo(CustomerController.BASE_URL + "/5")));
     }
 
     @Test

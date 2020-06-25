@@ -18,10 +18,9 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.*;
 
 class VendorServiceImplTest {
 
@@ -42,16 +41,18 @@ class VendorServiceImplTest {
     void getAllVendors() {
         //given
         List<Vendor> vendorList = Arrays.asList(new Vendor(), new Vendor(), new Vendor());
-
-        when(vendorRepository.findAll()).thenReturn(vendorList);
+        given(vendorRepository.findAll()).willReturn(vendorList);
 
         //when
         List<VendorDTO> vendorDTOS = vendorService.getAllVendors();
 
         //then
-        assertEquals(vendorList.size(), vendorDTOS.size());
+        then(vendorRepository)
+                .should()
+                .findAll();
+
+        assertThat(vendorList.size(), is(equalTo(vendorDTOS.size())));
         assertThat(vendorDTOS, hasItems(Matchers.hasProperty("vendorUrl")));
-        verify(vendorRepository, times(1)).findAll();
     }
 
     @Test
@@ -61,14 +62,18 @@ class VendorServiceImplTest {
         vendor.setId(5L);
         vendor.setName("Mike");
 
-        when(vendorRepository.findById(anyLong())).thenReturn(java.util.Optional.of(vendor));
+        given(vendorRepository.findById(anyLong())).willReturn(java.util.Optional.of(vendor));
 
         //when
         VendorDTO vendorDTO = vendorService.getVendorById(5L);
 
         //then
-        assertEquals(vendor.getName(), vendorDTO.getName());
-        assertEquals("/api/v1/vendors/5", vendorDTO.getVendorUrl());
+        then(vendorRepository)
+                .should()
+                .findById(anyLong());
+
+        assertThat(vendor.getName(), is(equalTo(vendorDTO.getName())));
+        assertThat("/api/v1/vendors/5", is(equalTo(vendorDTO.getVendorUrl())));
     }
 
     @Test
@@ -78,7 +83,7 @@ class VendorServiceImplTest {
         vendor.setId(5L);
         vendor.setName("Pri");
 
-        when(vendorRepository.save(any())).thenReturn(vendor);
+        given(vendorRepository.save(any())).willReturn(vendor);
 
         VendorDTO vendorDTO = vendorMapper.vendorToVendorDTO(vendor);
 
@@ -86,8 +91,12 @@ class VendorServiceImplTest {
         VendorDTO savedVendorDTO = vendorService.createNewVendor(vendorDTO);
 
         //then
-        assertEquals(vendorDTO.getName(), savedVendorDTO.getName());
-        assertEquals(VendorController.BASE_URL + "/" + 5, savedVendorDTO.getVendorUrl());
+        then(vendorRepository)
+                .should()
+                .save(any());
+
+        assertThat(vendorDTO.getName(), is(equalTo(savedVendorDTO.getName())));
+        assertThat(VendorController.BASE_URL + "/" + 5, is(equalTo(savedVendorDTO.getVendorUrl())));
     }
 
     @Test
@@ -99,14 +108,18 @@ class VendorServiceImplTest {
 
         VendorDTO vendorDTO = vendorMapper.vendorToVendorDTO(vendor);
 
-        when(vendorRepository.save(any())).thenReturn(vendor);
+        given(vendorRepository.save(vendor)).willReturn(vendor);
 
         //when
         VendorDTO updatedVendorDTO = vendorService.updateVendor(5L, vendorDTO);
 
         //then
-        assertEquals(vendorDTO.getName(), updatedVendorDTO.getName());
-        assertEquals(VendorController.BASE_URL + "/" + 5, updatedVendorDTO.getVendorUrl());
+        then(vendorRepository)
+                .should()
+                .save(vendor);
+
+        assertThat(vendorDTO.getName(), is(equalTo(updatedVendorDTO.getName())));
+        assertThat(VendorController.BASE_URL + "/" + 5, is(equalTo(updatedVendorDTO.getVendorUrl())));
     }
 
     @Test
@@ -122,16 +135,24 @@ class VendorServiceImplTest {
         Vendor savedVendor = vendorMapper.vendorDTOToVendor(vendorDTO);
         savedVendor.setId(vendor.getId());
 
-        when(vendorRepository.findById(anyLong())).thenReturn(java.util.Optional.of(vendor));
-        when(vendorRepository.save(any())).thenReturn(savedVendor);
+        given(vendorRepository.findById(anyLong())).willReturn(java.util.Optional.of(vendor));
+        given(vendorRepository.save(any())).willReturn(savedVendor);
 
         //when
         VendorDTO patchedVendorDTO = vendorService.patchVendor(5L, vendorDTO);
 
         //then
-        assertEquals(vendorDTO.getName(), patchedVendorDTO.getName());
+        then(vendorRepository)
+                .should()
+                .findById(5L);
+
+        then(vendorRepository)
+                .should()
+                .save(any());
+
+        assertThat(vendorDTO.getName(), is(equalTo(patchedVendorDTO.getName())));
         assertThat("Joe", not(equalTo(patchedVendorDTO.getName())));
-        assertEquals(VendorController.BASE_URL + "/" + 5, patchedVendorDTO.getVendorUrl());
+        assertThat(VendorController.BASE_URL + "/" + 5, is(equalTo(patchedVendorDTO.getVendorUrl())));
 
     }
 
@@ -145,10 +166,17 @@ class VendorServiceImplTest {
         VendorDTO vendorDTO = new VendorDTO();
         vendorDTO.setName("Mike");
 
-        when(vendorRepository.findById(anyLong())).thenReturn(Optional.empty());
+        given(vendorRepository.findById(anyLong())).willReturn(Optional.empty());
 
         //when, then
-        assertThrows(ResourceNotFoundException.class, () -> vendorService.patchVendor(5L, vendorDTO));
+        willThrow(new ResourceNotFoundException())
+                .given(vendorRepository)
+                .findById(anyLong());
+        try {
+            vendorService.patchVendor(5L, vendorDTO);
+            fail("Should throw Exception");
+        } catch (ResourceNotFoundException ignored) {
+        }
     }
 
     @Test
@@ -157,6 +185,8 @@ class VendorServiceImplTest {
         vendorService.deleteVendor(1L);
 
         //then
-        verify(vendorRepository, times(1)).deleteById(anyLong());
+        then(vendorRepository)
+                .should()
+                .deleteById(any());
     }
 }
