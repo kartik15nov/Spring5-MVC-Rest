@@ -11,6 +11,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 
 ext {
     mapstructVersion = "1.4.0.Beta1"
+    swaggerVersion = "2.9.2"
 }
 
 configurations {
@@ -33,6 +34,10 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    implementation "io.springfox:springfox-swagger2:${swaggerVersion}"
+    implementation "io.springfox:springfox-swagger-ui:${swaggerVersion}"
+
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
