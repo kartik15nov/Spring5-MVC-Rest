@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureRestDocs
+@AutoConfigureRestDocs(uriScheme = "https", uriHost = "dev.unknownbrain.com", uriPort = 80)
 @ExtendWith(RestDocumentationExtension.class)
 @WebMvcTest(controllers = CategoryController.class)
 class CategoryControllerTest {
@@ -83,7 +83,7 @@ class CategoryControllerTest {
                 .andExpect(jsonPath("$.name", equalTo("Apple")))
                 .andDo(
                         document(
-                                CategoryController.BASE_URL,
+                                "v1/category-get",
                                 pathParameters(parameterWithName("name").description("Name of desired Fruit to get.")),
                                 requestParameters(parameterWithName("isPresent").description("Is category present query param")),
                                 responseFields(

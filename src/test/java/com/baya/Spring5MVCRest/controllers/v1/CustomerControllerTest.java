@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureRestDocs
+@AutoConfigureRestDocs(uriScheme = "https", uriHost = "dev.unknownbrain.com", uriPort = 80)
 @ExtendWith(RestDocumentationExtension.class)
 @WebMvcTest(controllers = CustomerController.class)
 class CustomerControllerTest {
@@ -95,7 +95,7 @@ class CustomerControllerTest {
                 .andExpect(jsonPath("$.customer_url", equalTo(CustomerController.BASE_URL + "/5")))
                 .andDo(
                         document(
-                                CustomerController.BASE_URL,
+                                "v1/customer-new",
                                 requestFields(
                                         fields.withPath("firstName").description("First Name of Customer"),
                                         fields.withPath("lastName").description("Last Name of Customer"),

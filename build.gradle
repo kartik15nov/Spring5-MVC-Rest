@@ -13,6 +13,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 ext {
     mapstructVersion = "1.4.0.Beta1"
     swaggerVersion = "2.9.2"
+    snippetsDir = file('build/generated-snippets')
 }
 
 configurations {
@@ -56,12 +57,14 @@ dependencies {
 }
 
 test {
-    outputs.dir 'src/main/asciidoc'
     useJUnitPlatform()
 }
 
 asciidoctor {
+    attributes 'snippets': snippetsDir
     inputs.dir 'src/main/asciidoc'
+    outputDir "build/asciidoc"
+    sourceDir 'src/main/asciidoc'
     dependsOn test
 }
 

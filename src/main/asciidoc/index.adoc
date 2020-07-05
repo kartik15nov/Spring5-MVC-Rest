@@ -1,5 +1,5 @@
 = Unknown Brain Spring Rest Web Service
-John Thompson;
+Kartik;
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
@@ -10,18 +10,40 @@ Sample application demonstrating how to use Spring REST Docs with JUnit 5.
 
 One showing how to make a request using cURL:
 
-include::{snippets}/api/v1/categories/curl-request.adoc[]
+include::{snippets}/v1/category-get/curl-request.adoc[]
 
 One showing the HTTP request:
 
-include::{snippets}/api/v1/categories/http-request.adoc[]
+include::{snippets}/v1/category-get/http-request.adoc[]
 
 And one showing the HTTP response:
 
-include::{snippets}/api/v1/categories/http-response.adoc[]
+include::{snippets}/v1/category-get/http-response.adoc[]
 
 Response Body:
-include::{snippets}/api/v1/categories/response-body.adoc[]
+include::{snippets}/v1/category-get/response-body.adoc[]
 
 Response Fields:
-include::{snippets}/api/v1/categories/response-fields.adoc[]
+include::{snippets}/v1/category-get/response-fields.adoc[]
+
+
+
+`CustomerController` makes a call to a very simple service and produces three documentation snippets.
+
+One showing how to make a request using cURL:
+
+include::{snippets}/v1/customer-new/curl-request.adoc[]
+
+One showing the HTTP request:
+
+include::{snippets}/v1/customer-new/http-request.adoc[]
+
+And one showing the HTTP response:
+
+include::{snippets}/v1/customer-new/http-response.adoc[]
+
+Request Fields:
+include::{snippets}/v1/customer-new/request-fields.adoc[]
+
+Response Body:
+include::{snippets}/v1/customer-new/response-body.adoc[]
