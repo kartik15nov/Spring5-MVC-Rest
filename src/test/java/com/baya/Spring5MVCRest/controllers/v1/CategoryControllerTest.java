@@ -3,14 +3,16 @@ package com.baya.Spring5MVCRest.controllers.v1;
 import com.baya.Spring5MVCRest.api.v1.model.CategoryDTO;
 import com.baya.Spring5MVCRest.exceptions.ResourceNotFoundException;
 import com.baya.Spring5MVCRest.services.CategoryService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,25 +21,24 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@AutoConfigureRestDocs
+@ExtendWith(RestDocumentationExtension.class)
+@WebMvcTest(controllers = CategoryController.class)
 class CategoryControllerTest {
 
-    @Mock
-    CategoryService categoryService;
-
-    @InjectMocks
-    CategoryController categoryController;
-
+    @Autowired
     MockMvc mockMvc;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(categoryController).setControllerAdvice(RestResponseEntityExceptionHandler.class).build();
-    }
+    @MockBean
+    CategoryService categoryService;
 
     @Test
     void listCategories() throws Exception {
@@ -72,10 +73,25 @@ class CategoryControllerTest {
         when(categoryService.getCategoryByName(anyString())).thenReturn(categoryDTO);
 
         //when, then
-        mockMvc.perform(get(CategoryController.BASE_URL + "/Apple")
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(
+                RestDocumentationRequestBuilders
+                        .get(CategoryController.BASE_URL + "/{name}", "Apple")
+                        .param("isPresent", "yes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", equalTo("Apple")));
+                .andExpect(jsonPath("$.name", equalTo("Apple")))
+                .andDo(
+                        document(
+                                CategoryController.BASE_URL,
+                                pathParameters(parameterWithName("name").description("Name of desired Fruit to get.")),
+                                requestParameters(parameterWithName("isPresent").description("Is category present query param")),
+                                responseFields(
+                                        fieldWithPath("id").description("Id of Category"),
+                                        fieldWithPath("name").description("name of the document")
+                                )
+                        )
+                );
     }
 
     @Test
